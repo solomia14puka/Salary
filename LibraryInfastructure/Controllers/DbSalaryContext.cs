@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using LibraryInfrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace LibraryInfrastructure.Models;
+namespace LibraryInfrastructure.Controllers;
 
-public partial class DbLibraryContext : DbContext
+public partial class DbSalaryContext : DbContext
 {
-    public DbLibraryContext()
+    public DbSalaryContext()
     {
     }
 
-    public DbLibraryContext(DbContextOptions<DbLibraryContext> options)
+    public DbSalaryContext(DbContextOptions<DbSalaryContext> options)
         : base(options)
     {
     }

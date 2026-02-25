@@ -1,4 +1,0 @@
-<Solution>
-  <Project Path="LibraryDomain/LibraryDomain.csproj" />
-  <Project Path="LibraryInfastructure/LibraryInfrastructure.csproj" Id="00fbbf96-9be3-4e65-af14-b6316365ed03" />
-</Solution>
