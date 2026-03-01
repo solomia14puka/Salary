@@ -1,0 +1,56 @@
+﻿@model IEnumerable<LibraryInfrastructure.Models.Scientist>
+
+@{
+    ViewData["Title"] = "Науковці";
+}
+
+<h1>Науковці кафедри @ViewBag.DepartmentName</h1>
+
+<p>
+    <a asp-action="Create" asp-route-id="@ViewBag.DepartmentId">Додати нового науковця</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Fullname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Salary)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Createdat)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Updatedat)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Department)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fullname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Salary)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Createdat)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Updatedat)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Редагувати</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Деталі</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Видалити</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

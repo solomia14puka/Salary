@@ -1,0 +1,59 @@
+﻿@model LibraryInfrastructure.Models.Scientistposition
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Scientistposition</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Scientistid" class="control-label"></label>
+                <select asp-for="Scientistid" class="form-control" asp-items="ViewBag.Scientistid"></select>
+                <span asp-validation-for="Scientistid" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Positionid" class="control-label"></label>
+                <select asp-for="Positionid" class="form-control" asp-items="ViewBag.Positionid"></select>
+                <span asp-validation-for="Positionid" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Departmentid" class="control-label"></label>
+                <select asp-for="Departmentid" class="form-control" asp-items="ViewBag.Departmentid"></select>
+                <span asp-validation-for="Departmentid" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Employmentrate" class="control-label"></label>
+                <input asp-for="Employmentrate" class="form-control" />
+                <span asp-validation-for="Employmentrate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Startdate" class="control-label"></label>
+                <input asp-for="Startdate" class="form-control" />
+                <span asp-validation-for="Startdate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Enddate" class="control-label"></label>
+                <input asp-for="Enddate" class="form-control" />
+                <span asp-validation-for="Enddate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

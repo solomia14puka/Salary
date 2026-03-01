@@ -1,0 +1,54 @@
+﻿@model LibraryInfrastructure.Models.Salaryhistory
+
+@{
+    ViewData["Title"] = "Редагування";
+}
+
+<h1>Редагування</h1>
+
+<h4>Історія виплати</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Scientistid" class="control-label"></label>
+                <select asp-for="Scientistid" class="form-control" asp-items="ViewBag.Scientistid"></select>
+                <span asp-validation-for="Scientistid" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Oldsalary" class="control-label"></label>
+                <input asp-for="Oldsalary" class="form-control" />
+                <span asp-validation-for="Oldsalary" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Newsalary" class="control-label"></label>
+                <input asp-for="Newsalary" class="form-control" />
+                <span asp-validation-for="Newsalary" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Changedate" class="control-label"></label>
+                <input asp-for="Changedate" class="form-control" />
+                <span asp-validation-for="Changedate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Reason" class="control-label"></label>
+                <input asp-for="Reason" class="form-control" />
+                <span asp-validation-for="Reason" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
