@@ -12,6 +12,8 @@ public partial class Department
     [Display(Name = "Назва кафедри")]
     public string Name { get; set; } = null!;
 
+    [Required(ErrorMessage = "Оберіть факультет")]
+    [Display(Name = "Факультет")]
     public int? Facultyid { get; set; }
 
     [Display(Name = "Дата створення запису")]
@@ -20,6 +22,7 @@ public partial class Department
     [Display(Name = "Дата останнього оновлення")]
     public DateTime? Updatedat { get; set; }
 
+    [Display(Name = "Факультет")]
     public virtual Faculty? Faculty { get; set; }
 
     public virtual ICollection<Salaryfund> Salaryfunds { get; set; } = new List<Salaryfund>();
