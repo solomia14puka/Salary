@@ -61,7 +61,7 @@ namespace SalaryInfrastructure.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Scientistid,Positionid,Departmentid,Employmentrate,Startdate,Enddate")] Scientistposition scientistposition)
+        public async Task<IActionResult> Create([Bind("Scientistid,Positionid,Departmentid,Employmentrate,Startdate,Enddate")] Scientistposition scientistposition)
         {
             if (ModelState.IsValid)
             {

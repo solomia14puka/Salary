@@ -22,13 +22,21 @@ namespace SalaryInfrastructure.Controllers
         // GET: Scientists
         public async Task<IActionResult> Index(int? id, string? name)
         {
-            if (id == null) return RedirectToAction("Index", "Faculties");
+            if (id == null)
+            {
+                ViewBag.DepartmentName = "всіх підрозділів";
+                var allScientists = _context.Scientists.Include(s => s.Department);
+                return View(await allScientists.ToListAsync());
+            }
+
+            // Якщо ID передано — фільтруємо за кафедрою
             ViewBag.DepartmentId = id;
             ViewBag.DepartmentName = name;
-            var dbSalaryContext = _context.Scientists
+            var filteredScientists = _context.Scientists
                 .Where(s => s.Departmentid == id)
                 .Include(s => s.Department);
-            return View(await dbSalaryContext.ToListAsync());
+
+            return View(await filteredScientists.ToListAsync());
         }
 
         // GET: Scientists/Details/5
@@ -51,9 +59,20 @@ namespace SalaryInfrastructure.Controllers
         }
 
         // GET: Scientists/Create
-        public IActionResult Create()
+        public IActionResult Create(int? id)
         {
-            ViewData["Departmentid"] = new SelectList(_context.Departments, "Id", "Id");
+            if (id != null)
+            {
+                var department = _context.Departments.Find(id);
+                if (department != null)
+                {
+                    ViewBag.DepartmentName = department.Name;
+
+                    return View(new Scientist { Departmentid = (int)id });
+                }
+            }
+
+            ViewData["Departmentid"] = new SelectList(_context.Departments, "Id", "Name");
             return View();
         }
 
@@ -62,15 +81,19 @@ namespace SalaryInfrastructure.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Fullname,Departmentid,Salary,Createdat,Updatedat")] Scientist scientist)
+        public async Task<IActionResult> Create([Bind("Fullname,Departmentid,Salary,Createdat,Updatedat")] Scientist scientist)
         {
+            ModelState.Remove("Department");
+
             if (ModelState.IsValid)
             {
                 _context.Add(scientist);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                return RedirectToAction(nameof(Index), new { id = scientist.Departmentid });
             }
-            ViewData["Departmentid"] = new SelectList(_context.Departments, "Id", "Id", scientist.Departmentid);
+
+            ViewData["Departmentid"] = new SelectList(_context.Departments, "Id", "Name", scientist.Departmentid);
             return View(scientist);
         }
 
@@ -87,7 +110,7 @@ namespace SalaryInfrastructure.Controllers
             {
                 return NotFound();
             }
-            ViewData["Departmentid"] = new SelectList(_context.Departments, "Id", "Id", scientist.Departmentid);
+            ViewData["Departmentid"] = new SelectList(_context.Departments, "Id", "Name", scientist.Departmentid);
             return View(scientist);
         }
 
@@ -123,7 +146,7 @@ namespace SalaryInfrastructure.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["Departmentid"] = new SelectList(_context.Departments, "Id", "Id", scientist.Departmentid);
+            ViewData["Departmentid"] = new SelectList(_context.Departments, "Id", "Name", scientist.Departmentid);
             return View(scientist);
         }
 

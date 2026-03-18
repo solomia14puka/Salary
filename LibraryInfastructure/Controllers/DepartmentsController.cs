@@ -22,11 +22,21 @@ namespace SalaryInfrastructure.Controllers
         // GET: Departments
         public async Task<IActionResult> Index(int? id, string? name)
         {
-            if (id == null) return RedirectToAction("Index", "Faculties");
-            var dbSalaryContext = _context.Departments
-        .Where(d => d.Facultyid == id)
-        .Include(d => d.Faculty);
-            return View(await dbSalaryContext.ToListAsync());
+            if (id == null)
+            {
+                ViewBag.FacultyName = "всіх факультетів";
+                var allDepartments = _context.Departments.Include(d => d.Faculty);
+                return View(await allDepartments.ToListAsync());
+            }
+
+            // Якщо ID передано — фільтруємо за конкретним факультетом
+            ViewBag.FacultyId = id;
+            ViewBag.FacultyName = name;
+            var filteredDepartments = _context.Departments
+                .Where(d => d.Facultyid == id)
+                .Include(d => d.Faculty);
+
+            return View(await filteredDepartments.ToListAsync());
         }
 
         // GET: Departments/Details/5
@@ -51,7 +61,7 @@ namespace SalaryInfrastructure.Controllers
         // GET: Departments/Create
         public IActionResult Create()
         {
-            ViewData["Facultyid"] = new SelectList(_context.Faculties, "Id", "Id");
+            ViewData["Facultyid"] = new SelectList(_context.Faculties, "Id", "Name");
             return View();
         }
 
@@ -60,7 +70,7 @@ namespace SalaryInfrastructure.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Facultyid,Createdat,Updatedat")] Department department)
+        public async Task<IActionResult> Create([Bind("Name,Facultyid,Createdat,Updatedat")] Department department)
         {
             if (ModelState.IsValid)
             {
@@ -68,7 +78,7 @@ namespace SalaryInfrastructure.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["Facultyid"] = new SelectList(_context.Faculties, "Id", "Id", department.Facultyid);
+            ViewData["Facultyid"] = new SelectList(_context.Faculties, "Id", "Name", department.Facultyid);
             return View(department);
         }
 
@@ -85,7 +95,7 @@ namespace SalaryInfrastructure.Controllers
             {
                 return NotFound();
             }
-            ViewData["Facultyid"] = new SelectList(_context.Faculties, "Id", "Id", department.Facultyid);
+            ViewData["Facultyid"] = new SelectList(_context.Faculties, "Id", "Name", department.Facultyid);
             return View(department);
         }
 
@@ -121,7 +131,7 @@ namespace SalaryInfrastructure.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["Facultyid"] = new SelectList(_context.Faculties, "Id", "Id", department.Facultyid);
+            ViewData["Facultyid"] = new SelectList(_context.Faculties, "Id", "Name", department.Facultyid);
             return View(department);
         }
 

@@ -7,6 +7,12 @@
 <h1>Історія виплат для: @ViewBag.ScientistName</h1>
 
 <p>
+    @if (ViewBag.ScientistId != null)
+    {
+        <a asp-action="Create" asp-route-id="@ViewBag.ScientistId" class="btn btn-primary">Додати запис</a>
+    }
+</p>
+<p>
     <a asp-controller="Scientists" asp-action="Index">До списку науковців</a>
     <a asp-action="Create" asp-route-id="@ViewBag.ScientistId" class="btn btn-primary"></a>
 </p>

@@ -4,10 +4,13 @@
     ViewData["Title"] = "Науковці";
 }
 
-<h1>Науковці кафедри @ViewBag.DepartmentName</h1>
+<h1>Науковці @ViewBag.DepartmentName</h1>
 
 <p>
-    <a asp-action="Create" asp-route-id="@ViewBag.DepartmentId">Додати нового науковця</a>
+    @if (ViewBag.DepartmentId != null)
+    {
+        <a asp-action="Create" asp-route-id="@ViewBag.DepartmentId" class="btn btn-primary">Додати нового науковця</a>
+    }
 </p>
 <table class="table">
     <thead>
@@ -45,6 +48,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Updatedat)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Department.Name)
+                </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Редагувати</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Деталі</a> |

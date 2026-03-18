@@ -22,13 +22,21 @@ namespace SalaryInfrastructure.Controllers
         // GET: Salaryhistories
         public async Task<IActionResult> Index(int? id, string? name)
         {
-            if (id == null) return RedirectToAction("Index", "Scientists");
+            if (id == null)
+            {
+                ViewBag.ScientistName = "всіх співробітників";
+                var allHistories = _context.Salaryhistories.Include(s => s.Scientist);
+                return View(await allHistories.ToListAsync());
+            }
+
+            // Якщо ID передано — фільтруємо виплати конкретного вченого
             ViewBag.ScientistId = id;
             ViewBag.ScientistName = name;
-            var dbSalaryContext = _context.Salaryhistories
-        .Where(s => s.Scientistid == id)
-        .Include(s => s.Scientist);
-            return View(await dbSalaryContext.ToListAsync());
+            var filteredHistories = _context.Salaryhistories
+                .Where(s => s.Scientistid == id)
+                .Include(s => s.Scientist);
+
+            return View(await filteredHistories.ToListAsync());
         }
 
         // GET: Salaryhistories/Details/5

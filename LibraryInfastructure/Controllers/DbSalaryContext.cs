@@ -42,7 +42,9 @@ public partial class DbSalaryContext : DbContext
 
             entity.ToTable("department");
 
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Id)
+                .HasColumnName("id")
+                .UseIdentityByDefaultColumn();
             entity.Property(e => e.Createdat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp without time zone")
@@ -68,7 +70,9 @@ public partial class DbSalaryContext : DbContext
 
             entity.ToTable("faculty");
 
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Id)
+                .HasColumnName("id")
+                .UseIdentityByDefaultColumn();
             entity.Property(e => e.Createdat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp without time zone")
@@ -173,7 +177,9 @@ public partial class DbSalaryContext : DbContext
 
             entity.ToTable("scientist");
 
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Id)
+                .HasColumnName("id")
+                .UseIdentityByDefaultColumn();
             entity.Property(e => e.Createdat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp without time zone")
