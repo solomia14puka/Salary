@@ -4,6 +4,7 @@ using LibraryInfrastructure.Services;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,6 +14,19 @@ builder.Services.AddScoped<IDataPortServiceFactory<Faculty>, FacultyDataPortServ
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddDbContext<DbSalaryContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDbContext<IdentityContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("IdentityConnection")));
+
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+{
+    options.Password.RequireNonAlphanumeric = false; // спецсимволи не обов'язкові
+    options.Password.RequireUppercase = false; // великі літери не обов'язкові
+    options.Password.RequireLowercase = false; // маленькі літери не обов'язкові
+
+    options.User.AllowedUserNameCharacters = "";
+})
+.AddEntityFrameworkStores<IdentityContext>();
 var app = builder.Build();
 
 var defaultCulture = new CultureInfo("en-US");
@@ -35,6 +49,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

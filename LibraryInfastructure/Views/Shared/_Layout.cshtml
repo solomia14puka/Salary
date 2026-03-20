@@ -33,6 +33,26 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Scientists" asp-action="Index">Науковці</a>
                         </li>
                     </ul>
+                    <ul class="navbar-nav">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item d-flex align-items-center">
+                                <span class="nav-link text-dark me-3">Привіт, @User.Identity.Name!</span>
+                                <form method="post" asp-controller="Account" asp-action="Logout" class="m-0">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Вихід</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Реєстрація</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary btn-sm mt-1" asp-controller="Account" asp-action="Login">Вхід</a>
+                            </li>
+                        }
+                    </ul>
                 </div>
             </div>
         </nav>
