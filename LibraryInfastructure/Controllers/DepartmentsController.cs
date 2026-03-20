@@ -72,6 +72,14 @@ namespace SalaryInfrastructure.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Facultyid,Createdat,Updatedat")] Department department)
         {
+            ModelState.Remove("Faculty");
+            ModelState.Remove("Scientists");
+
+            if (_context.Departments.Any(d => d.Name == department.Name && d.Facultyid == department.Facultyid))
+            {
+                ModelState.AddModelError("Name", "На цьому факультеті вже є кафедра з такою назвою!");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(department);

@@ -38,3 +38,69 @@
         </div>
     </div>
 </div>
+<div class="row mt-5">
+    <div class="col-md-6 text-center">
+        <div id="departmentsChart" style="width: 100%; height: 400px;"></div>
+    </div>
+    <div class="col-md-6 text-center">
+        <div id="scientistsChart" style="width: 100%; height: 400px;"></div>
+    </div>
+</div>
+@section Scripts
+{
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawDepartmentsChart);
+        google.charts.setOnLoadCallback(drawScientistsChart);
+
+        // Функція для Графіка 1 
+        function drawDepartmentsChart() {
+            fetch('/api/charts/countDepartments')
+                .then(response => response.json())
+                .then(data => {
+                    const dataTable = new google.visualization.DataTable();
+                    dataTable.addColumn('string', 'Факультет');
+                    dataTable.addColumn('number', 'Кількість кафедр');
+
+                    data.forEach(item => {
+                        dataTable.addRow([item.name, item.count]);
+                    });
+
+                    const options = {
+                        title: 'Розподіл кафедр по факультетах',
+                        pieHole: 0.4,
+                        colors: ['#2c3e50', '#18bc9c', '#3498db', '#e74c3c'] // Кольори під твою тему
+                    };
+
+                    const chart = new google.visualization.PieChart(document.getElementById('departmentsChart'));
+                    chart.draw(dataTable, options);
+                });
+        }
+
+        // Функція для Графіка 2 
+        function drawScientistsChart() {
+            fetch('/api/charts/countScientists')
+                .then(response => response.json())
+                .then(data => {
+                    const dataTable = new google.visualization.DataTable();
+                    dataTable.addColumn('string', 'Кафедра');
+                    dataTable.addColumn('number', 'Кількість науковців');
+
+                    data.forEach(item => {
+                        dataTable.addRow([item.name, item.count]);
+                    });
+
+                    const options = {
+                        title: 'Кількість науковців на кафедрах',
+                        legend: { position: 'none' },
+                        colors: ['#3498db']
+                    };
+
+                    const chart = new google.visualization.ColumnChart(document.getElementById('scientistsChart'));
+                    chart.draw(dataTable, options);
+                });
+        }
+    </script>
+}

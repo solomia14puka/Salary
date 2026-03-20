@@ -54,8 +54,13 @@ namespace SalaryInfrastructure.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Createdat,Updatedat")] Faculty faculty)
+        public async Task<IActionResult> Create([Bind("Name,Createdat,Updatedat")] Faculty faculty)
         {
+            if (_context.Faculties.Any(f => f.Name == faculty.Name))
+            {
+                ModelState.AddModelError("Name", "Факультет з такою назвою вже існує!");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(faculty);
