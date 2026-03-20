@@ -1,11 +1,14 @@
-using System.Globalization;
-using Microsoft.AspNetCore.Localization;
 using LibraryInfrastructure.Controllers;
+using LibraryInfrastructure.Models;
+using LibraryInfrastructure.Services;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IDataPortServiceFactory<Faculty>, FacultyDataPortServiceFactory>();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddDbContext<DbSalaryContext>(options =>

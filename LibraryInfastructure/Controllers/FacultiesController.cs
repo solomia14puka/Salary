@@ -7,16 +7,20 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LibraryInfrastructure.Controllers;
 using LibraryInfrastructure.Models;
+using LibraryInfrastructure.Services;
+using Microsoft.AspNetCore.Http;
 
 namespace SalaryInfrastructure.Controllers
 {
     public class FacultiesController : Controller
     {
         private readonly DbSalaryContext _context;
+        private readonly IDataPortServiceFactory<Faculty> _facultyDataPortServiceFactory;
 
-        public FacultiesController(DbSalaryContext context)
+        public FacultiesController(DbSalaryContext context, IDataPortServiceFactory<Faculty> facultyDataPortServiceFactory)
         {
             _context = context;
+            _facultyDataPortServiceFactory = facultyDataPortServiceFactory;
         }
 
         // GET: Faculties
@@ -157,6 +161,27 @@ namespace SalaryInfrastructure.Controllers
         private bool FacultyExists(int id)
         {
             return _context.Faculties.Any(e => e.Id == id);
+        }
+        public IActionResult Import() => View();
+        [HttpPost]
+        public async Task<IActionResult> Import(IFormFile fileExcel, CancellationToken cancellationToken)
+        {
+            var importService = _facultyDataPortServiceFactory.GetImportService(fileExcel.ContentType);
+            using var stream = fileExcel.OpenReadStream();
+            await importService.ImportFromStreamAsync(stream, cancellationToken);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Export(CancellationToken cancellationToken)
+        {
+            string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            var exportService = _facultyDataPortServiceFactory.GetExportService(contentType);
+
+            using var memoryStream = new MemoryStream();
+            await exportService.WriteToAsync(memoryStream, cancellationToken);
+            memoryStream.Position = 0;
+
+            return File(memoryStream.ToArray(), contentType, $"faculties_{DateTime.Now:yyyyMMdd}.xlsx");
         }
     }
 }
