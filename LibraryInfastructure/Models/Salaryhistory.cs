@@ -11,22 +11,21 @@ public partial class Salaryhistory
     [Required(ErrorMessage = "Оберіть науковця")]
     [Display(Name = "Науковець")]
     public int? Scientistid { get; set; }
-
     [Required(ErrorMessage = "Введіть суму виплати")]
     [Display(Name = "Сума виплати (грн)")]
     [Range(0.01, 1000000, ErrorMessage = "Сума має бути більшою за нуль")]
-    public decimal? Oldsalary { get; set; }
+    public decimal? Amount { get; set; }
 
-    [Display(Name = "Оновлена сума виплати")]
-    [Range(0.01, 1000000, ErrorMessage = "Сума має бути більшою за нуль")]
-    public decimal? Newsalary { get; set; }
+    [Required(ErrorMessage = "Вкажіть тип виплати")]
+    [Display(Name = "Тип виплати")]
+    public string? PaymentType { get; set; }
 
     [Required(ErrorMessage = "Вкажіть дату виплати")]
     [Display(Name = "Дата виплати")]
     [DataType(DataType.Date)]
-    public DateTime? Changedate { get; set; }
+    public DateTime? PaymentDate { get; set; }
 
-    [Display(Name = "Причина зміни")]
+    [Display(Name = "Коментар / Причина")]
     public string? Reason { get; set; }
 
     [Display(Name = "Науковець")]

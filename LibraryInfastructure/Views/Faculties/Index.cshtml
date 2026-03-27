@@ -6,10 +6,26 @@
 
 <h1>Список факультетів</h1>
 
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Помилка!</strong> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Успіх!</strong> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <p class="mb-3">
     <a asp-action="Create" class="btn btn-success">Створити новий</a>
     <a asp-action="Import" class="btn btn-primary">Завантажити з файлу</a>
-    <a asp-action="Export" class="btn btn-outline-primary">Експортувати у файл</a>
+    <a asp-action="Export" class="btn btn-primary">Експортувати у файл</a>
 </p>
 <table class="table">
     <thead>

@@ -4,30 +4,29 @@
     ViewData["Title"] = "Видалення";
 }
 
-<h1>Підтвердити видалення</h1>
+<h1>Видалення</h1>
 
 <h3>Ви впевнені, що хочете це видалити?</h3>
 <div>
-    <h4>Історія виплат</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Oldsalary)
+            @Html.DisplayNameFor(model => model.Amount)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Oldsalary)
+            @Html.DisplayFor(model => model.Amount)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Newsalary)
+            @Html.DisplayNameFor(model => model.PaymentType)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Newsalary)
+            @Html.DisplayFor(model => model.PaymentType)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Changedate)
+            @Html.DisplayNameFor(model => model.PaymentDate)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Changedate)
+            @Html.DisplayFor(model => model.PaymentDate)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Reason)
@@ -45,7 +44,7 @@
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <input type="submit" value="Видалити" class="btn btn-danger" /> |
+        <a asp-action="Index">Назад</a>
     </form>
 </div>

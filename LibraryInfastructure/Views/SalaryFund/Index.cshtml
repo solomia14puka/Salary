@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Плановий фонд";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Фінансова аналітика </h2>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h4 class="mb-0"><i class="fas fa-calculator"></i> Калькулятор планового фонду заробітної плати</h4>
+                </div>
+                <div class="card-body text-center p-5">
+                    <h5 class="text-muted mb-4">Розрахунок на <strong>@ViewBag.NextMonthName</strong></h5>
+                    
+                    <p class="card-text text-secondary mb-2">
+                        На основі виплат за поточний місяць (@ViewBag.CurrentMonthName) з урахуванням 5% фінансового резерву на премії та індексацію, необхідно підготувати:
+                    </p>
+
+                    <h1 class="display-4 text-success fw-bold my-4">
+                        @Math.Round(ViewBag.PlannedFund, 2) грн
+                    </h1>
+
+                    <hr class="w-50 mx-auto mb-4" />
+                    
+                    <p class="text-muted small">
+                        Фактично виплачено у поточному місяці: <strong>@Math.Round(ViewBag.CurrentTotal, 2) грн</strong>
+                    </p>
+                </div>
+                <div class="card-footer text-center bg-light py-3">
+                    <a asp-controller="Salaryhistories" asp-action="Index" class="btn btn-outline-primary">
+                        Перейти до історії виплат
+                    </a>
+                    <a asp-controller="Salaryhistories" asp-action="Dynamics" class="btn btn-outline-info">
+                        Переглянути динаміку фонду зарплати
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

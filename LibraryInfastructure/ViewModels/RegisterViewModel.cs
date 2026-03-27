@@ -13,9 +13,10 @@ namespace LibraryInfrastructure.ViewModels
         [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Поле 'Рік народження' обов'язкове")]
+        [Required(ErrorMessage = "Поле 'Рік народження' обов'язкове для заповнення")]
+        [Range(1900, 2026, ErrorMessage = "Рік народження не може мати такого значення")]
         [Display(Name = "Рік народження")]
-        public int Year { get; set; }
+        public int? Year { get; set; }
 
         [Required(ErrorMessage = "Поле 'Пароль' обов'язкове для заповнення")]
         [DataType(DataType.Password)]
@@ -23,7 +24,7 @@ namespace LibraryInfrastructure.ViewModels
         public string Password { get; set; }
 
         [Required(ErrorMessage = "Поле 'Підтвердження паролю' обов'язкове")]
-        [Compare("Password", ErrorMessage = "Паролі не співпадають")]
+        [Compare("Password", ErrorMessage = "Паролі не збігаються")]
         [DataType(DataType.Password)]
         [Display(Name = "Підтвердження паролю")]
         public string PasswordConfirm { get; set; }

@@ -23,7 +23,7 @@
             <div class="card-body text-center">
                 <h5 class="card-title">Персонал</h5>
                 <p class="card-text">База даних усіх наукових співробітників системи.</p>
-                <a asp-controller="Scientists" asp-action="Index" class="btn btn-outline-primary">Переглянути всіх</a>
+                <a asp-controller="Scientists" asp-action="Index" class="btn btn-primary">Переглянути всіх</a>
             </div>
         </div>
     </div>
@@ -32,8 +32,8 @@
         <div class="card h-100 shadow-sm">
             <div class="card-body text-center">
                 <h5 class="card-title">Виплати</h5>
-                <p class="card-text">Контроль історії нарахувань заробітної плати</p>
-                <a asp-controller="Salaryhistories" asp-action="Index" class="btn btn-outline-secondary">Історія виплат</a>
+                <p class="card-text">Контроль історії нарахувань заробітної плати. Аналітика.</p>
+                <a asp-controller="Salaryhistories" asp-action="Index" class="btn btn-primary">Історія виплат</a>
             </div>
         </div>
     </div>
@@ -57,26 +57,34 @@
 
         // Функція для Графіка 1 
         function drawDepartmentsChart() {
-            fetch('/api/charts/countDepartments')
+        fetch('/api/charts/countScientists')
                 .then(response => response.json())
                 .then(data => {
                     const dataTable = new google.visualization.DataTable();
-                    dataTable.addColumn('string', 'Факультет');
-                    dataTable.addColumn('number', 'Кількість кафедр');
+                    dataTable.addColumn('string', 'Кафедра');
+                    dataTable.addColumn('number', 'Кількість науковців');
 
                     data.forEach(item => {
                         dataTable.addRow([item.name, item.count]);
                     });
 
-                    const options = {
-                        title: 'Розподіл кафедр по факультетах',
-                        pieHole: 0.4,
-                        colors: ['#2c3e50', '#18bc9c', '#3498db', '#e74c3c'] // Кольори під твою тему
-                    };
+                    const googlePalette = [
+                '#2c3e50', '#2980b9', '#27ae60', '#e67e22','#8e44ad', 
+                '#16a085', '#c0392b', '#7f8c8d', '#f39c12', '#1abc9c', 
+                '#34495e'];
 
-                    const chart = new google.visualization.PieChart(document.getElementById('departmentsChart'));
-                    chart.draw(dataTable, options);
-                });
+                    const options = {
+                title: 'Розподіл науковців по кафедрах',
+                pieHole: 0.4,
+                pieSliceText: 'percentage',
+                colors: googlePalette, 
+                legend: { position: 'right' },
+                chartArea: { width: '95%', height: '80%' }
+            };
+
+            const chart = new google.visualization.PieChart(document.getElementById('departmentsChart'));
+            chart.draw(dataTable, options);
+        });
         }
 
         // Функція для Графіка 2 

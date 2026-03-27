@@ -25,7 +25,7 @@ namespace LibraryInfrastructure.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = new User { Email = model.Email, UserName = model.Name, Year = model.Year };
+                User user = new User { Email = model.Email, UserName = model.Name, Year = model.Year ?? 0 };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

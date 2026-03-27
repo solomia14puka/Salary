@@ -4,45 +4,53 @@
     ViewData["Title"] = "Створення";
 }
 
-<h1>Create</h1>
+<h1>Посада</h1>
 
-<h4>Scientistposition</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="container mt-4">
+    <div class="card shadow-sm p-4">
+        <h2 class="mb-4 text-center">Призначення науковця на посаду</h2>
+
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Scientistid" class="control-label"></label>
-                <select asp-for="Scientistid" class ="form-control" asp-items="ViewBag.Scientistid"></select>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Науковець</label>
+                    <select asp-for="Scientistid" class="form-select" asp-items="ViewBag.Scientistid"></select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Посада</label>
+                    <select asp-for="Positionid" class="form-select" asp-items="ViewBag.Positionid"></select>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Positionid" class="control-label"></label>
-                <select asp-for="Positionid" class ="form-control" asp-items="ViewBag.Positionid"></select>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Кафедра</label>
+                    <select asp-for="Departmentid" class="form-select" asp-items="ViewBag.Departmentid"></select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Ставка</label>
+                    <input asp-for="Employmentrate" class="form-control" type="number" step="0.1" min="0.1" max="1.0" />
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Departmentid" class="control-label"></label>
-                <select asp-for="Departmentid" class ="form-control" asp-items="ViewBag.Departmentid"></select>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Дата початку</label>
+                    <input asp-for="Startdate" class="form-control" type="date" />
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Startdate" class="control-label"></label>
-                <input asp-for="Startdate" class="form-control" />
-                <span asp-validation-for="Startdate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Enddate" class="control-label"></label>
-                <input asp-for="Enddate" class="form-control" />
-                <span asp-validation-for="Enddate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-dark px-5">Зберегти призначення</button>
+                <a asp-action="Index" class="btn btn-outline-secondary ms-2">Назад до списку</a>
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Назад</a>
 </div>
 
 @section Scripts {

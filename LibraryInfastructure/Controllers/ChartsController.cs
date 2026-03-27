@@ -19,7 +19,6 @@ namespace SalaryInfrastructure.Controllers
             _context = context;
         }
 
-        // Точка доступу 1: Кількість кафедр на кожному факультеті
         [HttpGet("countDepartments")]
         public async Task<JsonResult> GetDepartmentsPerFacultyAsync()
         {
@@ -33,8 +32,7 @@ namespace SalaryInfrastructure.Controllers
 
             return new JsonResult(responseItems);
         }
-
-        // Точка доступу 2: Кількість науковців на кожній кафедрі
+        
         [HttpGet("countScientists")]
         public async Task<JsonResult> GetScientistsPerDepartmentAsync()
         {

@@ -1,15 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using LibraryInfrastructure.Controllers;
+using LibraryInfrastructure.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using LibraryInfrastructure.Controllers;
-using LibraryInfrastructure.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SalaryInfrastructure.Controllers
 {
+    [Authorize]
     public class ScientistsController : Controller
     {
         private readonly DbSalaryContext _context;
@@ -20,23 +25,42 @@ namespace SalaryInfrastructure.Controllers
         }
 
         // GET: Scientists
-        public async Task<IActionResult> Index(int? id, string? name)
+        public async Task<IActionResult> Index(int? id, string? name, string? searchString)
         {
+            ViewData["CurrentFilter"] = searchString;
+
+            var query = _context.Scientists
+         .Include(s => s.Department)
+             .ThenInclude(d => d.Faculty)
+         .Include(s => s.Scientistpositions)
+             .ThenInclude(sp => sp.Position)
+         .AsQueryable();
+
             if (id == null)
             {
+                ViewBag.DepartmentId = null;
                 ViewBag.DepartmentName = "всіх підрозділів";
-                var allScientists = _context.Scientists.Include(s => s.Department);
-                return View(await allScientists.ToListAsync());
+            }
+            else
+            {
+                ViewBag.DepartmentId = id;
+                ViewBag.DepartmentName = name;
+                query = query.Where(s => s.Departmentid == id);
             }
 
-            // Якщо ID передано — фільтруємо за кафедрою
-            ViewBag.DepartmentId = id;
-            ViewBag.DepartmentName = name;
-            var filteredScientists = _context.Scientists
-                .Where(s => s.Departmentid == id)
-                .Include(s => s.Department);
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                var searchLower = searchString.ToLower();
 
-            return View(await filteredScientists.ToListAsync());
+                query = query.Where(s =>
+                    s.Fullname.ToLower().Contains(searchLower) ||
+                    s.Department.Name.ToLower().Contains(searchLower) ||
+                    s.Department.Faculty.Name.ToLower().Contains(searchLower) ||
+                    s.Scientistpositions.Any(sp => sp.Position.Name.ToLower().Contains(searchLower)) 
+                );
+            }
+
+            return View(await query.ToListAsync());
         }
 
         // GET: Scientists/Details/5
@@ -67,12 +91,14 @@ namespace SalaryInfrastructure.Controllers
                 if (department != null)
                 {
                     ViewBag.DepartmentName = department.Name;
+                    ViewData["PositionId"] = new SelectList(_context.Positions, "Id", "Name");
 
                     return View(new Scientist { Departmentid = (int)id });
                 }
             }
 
             ViewData["Departmentid"] = new SelectList(_context.Departments, "Id", "Name");
+            ViewData["PositionId"] = new SelectList(_context.Positions, "Id", "Name");
             return View();
         }
 
@@ -81,21 +107,40 @@ namespace SalaryInfrastructure.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Fullname,Departmentid,Salary,Createdat,Updatedat")] Scientist scientist)
+        public async Task<IActionResult> Create([Bind("Fullname,Departmentid,Salary,Createdat,Updatedat")] Scientist scientist, int[] selectedPositionIds)
         {
             ModelState.Remove("Department");
 
             if (ModelState.IsValid)
             {
+                scientist.Createdat = DateTime.Now;
+                scientist.Updatedat = DateTime.Now;
                 _context.Add(scientist);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Index), new { id = scientist.Departmentid });
-            }
+                if (selectedPositionIds != null)
+                {
+                    foreach (var posId in selectedPositionIds)
+                    {
+                        _context.Scientistpositions.Add(new Scientistposition
+                        {
+                            Scientistid = scientist.Id,
+                            Positionid = posId,
+                            Departmentid = scientist.Departmentid,
+                            Employmentrate = 1.0m,
+                            Startdate = DateOnly.FromDateTime(DateTime.Now)
+                        });
+                    }
+                    await _context.SaveChangesAsync();
+                }
+                    var department = await _context.Departments.FindAsync(scientist.Departmentid);
+                    return RedirectToAction(nameof(Index), new { id = scientist.Departmentid, name = department?.Name });
+                }
 
-            ViewData["Departmentid"] = new SelectList(_context.Departments, "Id", "Name", scientist.Departmentid);
-            return View(scientist);
-        }
+                ViewData["Departmentid"] = new SelectList(_context.Departments, "Id", "Name", scientist.Departmentid);
+                ViewData["PositionId"] = new SelectList(_context.Positions, "Id", "Name");
+                return View(scientist);
+            }
 
         // GET: Scientists/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -105,12 +150,18 @@ namespace SalaryInfrastructure.Controllers
                 return NotFound();
             }
 
-            var scientist = await _context.Scientists.FindAsync(id);
+            var scientist = await _context.Scientists
+                .Include(s => s.Scientistpositions)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (scientist == null)
             {
                 return NotFound();
             }
+            var currentPos = scientist.Scientistpositions.OrderByDescending(p => p.Startdate).FirstOrDefault();
+
             ViewData["Departmentid"] = new SelectList(_context.Departments, "Id", "Name", scientist.Departmentid);
+            ViewData["PositionId"] = new SelectList(_context.Positions, "Id", "Name", currentPos?.Positionid);
+            ViewBag.EmploymentRate = currentPos?.Employmentrate;
             return View(scientist);
         }
 
@@ -119,34 +170,51 @@ namespace SalaryInfrastructure.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Fullname,Departmentid,Salary,Createdat,Updatedat")] Scientist scientist)
-        {
+        public async Task<IActionResult> Edit(int id, [Bind("Id, Fullname, Departmentid, Salary, Createdat, Updatedat")] Scientist scientist, int[] selectedPositionIds)
+            {
             if (id != scientist.Id)
             {
                 return NotFound();
             }
+            ModelState.Remove("Department");
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    scientist.Updatedat = DateTime.Now;
                     _context.Update(scientist);
+
+                    var oldPositions = _context.Scientistpositions.Where(sp => sp.Scientistid == id);
+                    _context.Scientistpositions.RemoveRange(oldPositions);
+
+                    if (selectedPositionIds != null)
+                    {
+                        foreach (var posId in selectedPositionIds)
+                        {
+                            _context.Scientistpositions.Add(new Scientistposition
+                            {
+                                Scientistid = id,
+                                Positionid = posId,
+                                Departmentid = scientist.Departmentid,
+                                Employmentrate = 1.0m,
+                                Startdate = DateOnly.FromDateTime(DateTime.Now)
+                            });
+                        }
+                    }
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ScientistExists(scientist.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!ScientistExists(scientist.Id)) return NotFound();
+                    else throw;
                 }
-                return RedirectToAction(nameof(Index));
+
+                var dept = await _context.Departments.FindAsync(scientist.Departmentid);
+                return RedirectToAction(nameof(Index), new { id = scientist.Departmentid, name = dept?.Name });
             }
             ViewData["Departmentid"] = new SelectList(_context.Departments, "Id", "Name", scientist.Departmentid);
+            ViewData["PositionId"] = new SelectList(_context.Positions, "Id", "Name");
             return View(scientist);
         }
 
@@ -174,13 +242,21 @@ namespace SalaryInfrastructure.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var scientist = await _context.Scientists.FindAsync(id);
+            var scientist = await _context.Scientists
+        .Include(s => s.Department)
+        .FirstOrDefaultAsync(s => s.Id == id);
+
             if (scientist != null)
             {
+                var deptId = scientist.Departmentid;
+                var deptName = scientist.Department?.Name;
+
                 _context.Scientists.Remove(scientist);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index), new { id = deptId, name = deptName });
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

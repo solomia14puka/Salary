@@ -32,7 +32,7 @@ public partial class DbSalaryContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=solomiapu411070");
+        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=postgres2;Username=postgres;Password=solomiapu411070");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -152,16 +152,6 @@ public partial class DbSalaryContext : DbContext
             entity.ToTable("salaryhistory");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Changedate)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("changedate");
-            entity.Property(e => e.Newsalary)
-                .HasPrecision(10, 2)
-                .HasColumnName("newsalary");
-            entity.Property(e => e.Oldsalary)
-                .HasPrecision(10, 2)
-                .HasColumnName("oldsalary");
             entity.Property(e => e.Reason).HasColumnName("reason");
             entity.Property(e => e.Scientistid).HasColumnName("scientistid");
 

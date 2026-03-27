@@ -1,14 +1,16 @@
-﻿@model IEnumerable<LibraryInfrastructure.Models.Department>
+﻿@model IEnumerable<LibraryInfrastructure.Models.Position>
 
 @{
-    ViewData["Title"] = "Кафедри";
+    ViewData["Title"] = "Посада";
 }
 
-<h1>Кафедри @ViewBag.FacultyName</h1>
+<h1>Посада</h1>
 
-<p class="mb-3">
-    <a asp-action="Create" class="btn btn-success">Додати нову кафедру</a>
-</p>
+<div class="mb-4 mt-2">
+    <a asp-action="Create" class="btn btn-success shadow-sm">
+        <i class="fas fa-plus"></i> Створити нову
+    </a>
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -20,9 +22,6 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Updatedat)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Faculty)
             </th>
             <th></th>
         </tr>
@@ -39,13 +38,10 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Updatedat)
             </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Faculty.Name)
-                </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Редагувати</a> |
+                <a asp-action="Edit" asp-route-id="@item.Id">Редагування</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Деталі</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Видалити</a>
+                <a asp-action="Delete" asp-route-id="@item.Id">Видалення</a>
             </td>
         </tr>
 }

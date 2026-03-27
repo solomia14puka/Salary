@@ -1,32 +1,42 @@
 ﻿@model IEnumerable<LibraryInfrastructure.Models.Salaryhistory>
 
 @{
-    ViewData["Title"] = "Зарплата";
+    ViewData["Title"] = "Виплати";
 }
 
-<h1>Історія виплат для: @ViewBag.ScientistName</h1>
+<h1>Виплати</h1>
 
-<p>
-    @if (ViewBag.ScientistId != null)
-    {
-        <a asp-action="Create" asp-route-id="@ViewBag.ScientistId" class="btn btn-primary">Додати запис</a>
-    }
-</p>
-<p>
-    <a asp-controller="Scientists" asp-action="Index">До списку науковців</a>
-    <a asp-action="Create" asp-route-id="@ViewBag.ScientistId" class="btn btn-primary"></a>
-</p>
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <div>
+        <a asp-action="Create" class="btn btn-primary">
+            Створити виплату вручну
+        </a>
+        <a asp-controller="SalaryFund" asp-action="Index" class="btn btn-primary">
+            Калькулятор фонду
+        </a>
+    </div>
+
+    <div>
+        <form asp-action="AutoPayBaseSalaries" method="post" class="d-flex align-items-center" onsubmit="return confirm('Ви впевнені, що хочете автоматично нарахувати оклад усім за вказану дату?');">
+            <input type="date" name="paymentDate" class="form-control me-2" required value="@DateTime.Now.ToString("yyyy-MM-dd")" style="max-width: 150px;" />
+            
+            <button type="submit" class="btn btn-primary">
+                Нарахувати оклад усім
+            </button>
+        </form>
+    </div>
+</div>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Oldsalary)
+                @Html.DisplayNameFor(model => model.Amount)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Newsalary)
+                @Html.DisplayNameFor(model => model.PaymentType)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Changedate)
+                @Html.DisplayNameFor(model => model.PaymentDate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Reason)
@@ -41,21 +51,24 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Oldsalary)
+                @Html.DisplayFor(modelItem => item.Amount)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Newsalary)
+                @Html.DisplayFor(modelItem => item.PaymentType)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Changedate)
+                @Html.DisplayFor(modelItem => item.PaymentDate)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Reason)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                @Html.DisplayFor(modelItem => item.Scientist.Fullname)
+            </td>
+            <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Редагування</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Деталі</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Видалення</a>
             </td>
         </tr>
 }

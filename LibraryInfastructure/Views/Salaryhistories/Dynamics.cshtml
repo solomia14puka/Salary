@@ -1,0 +1,90 @@
+﻿@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Динаміка фонду";
+    var labels = Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Select(m => m.Period)));
+    var data = Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Select(m => m.TotalAmount)));
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-chart-line text-primary"></i> Аналіз динаміки фонду зарплати</h2>
+        
+        <a asp-action="ExportDynamicsReport" class="btn btn-success shadow-sm">
+            <i class="fas fa-file-excel"></i> Сформувати звіт (Excel)
+        </a>
+    </div>
+
+    <div class="card shadow border-0 rounded-lg">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 text-center">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="px-4 py-3">Період</th>
+                        <th class="px-4 py-3">Загальна сума виплат (грн)</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <div class="card shadow border-0 rounded-lg mb-4">
+                        <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                            <h5 class="text-muted"><i class="fas fa-chart-bar"></i> Графік виплат по місяцях</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="dynamicsChart" height="100"></canvas>
+                        </div>
+                    </div> 
+                   @foreach (var item in Model) {
+                        <tr>
+                            <td class="px-4 py-3 fw-bold text-secondary">@item.Period</td>
+                            <td class="px-4 py-3 text-dark fw-bold">@item.TotalAmount.ToString("N2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">← Повернутися до загальної аналітики</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        var ctx = document.getElementById('dynamicsChart').getContext('2d');
+        
+        var dynamicsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: @labels,
+                datasets: [{
+                    label: 'Фонд заробітної плати (грн)',
+                    data: @data,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)', 
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                    pointRadius: 5,
+                    fill: true,
+                    tension: 0.3 
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+}

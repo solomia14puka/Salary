@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LibraryInfrastructure.Controllers;
 using LibraryInfrastructure.Models;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace SalaryInfrastructure.Controllers
 {
+    [Authorize]
     public class DepartmentsController : Controller
     {
         private readonly DbSalaryContext _context;
@@ -29,9 +32,9 @@ namespace SalaryInfrastructure.Controllers
                 return View(await allDepartments.ToListAsync());
             }
 
-            // Якщо ID передано — фільтруємо за конкретним факультетом
-            ViewBag.FacultyId = id;
-            ViewBag.FacultyName = name;
+            var faculty = await _context.Faculties.FindAsync(id);
+            ViewBag.FacultyName = faculty?.Name;
+
             var filteredDepartments = _context.Departments
                 .Where(d => d.Facultyid == id)
                 .Include(d => d.Faculty);
@@ -84,7 +87,7 @@ namespace SalaryInfrastructure.Controllers
             {
                 _context.Add(department);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Faculties", new { id = department.Facultyid });
             }
             ViewData["Facultyid"] = new SelectList(_context.Faculties, "Id", "Name", department.Facultyid);
             return View(department);
@@ -118,6 +121,7 @@ namespace SalaryInfrastructure.Controllers
             {
                 return NotFound();
             }
+            ModelState.Remove("Faculty");
 
             if (ModelState.IsValid)
             {
@@ -137,8 +141,8 @@ namespace SalaryInfrastructure.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
-            }
+                return RedirectToAction("Details", "Faculties", new { id = department.Facultyid });
+        }
             ViewData["Facultyid"] = new SelectList(_context.Faculties, "Id", "Name", department.Facultyid);
             return View(department);
         }
@@ -168,13 +172,18 @@ namespace SalaryInfrastructure.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var department = await _context.Departments.FindAsync(id);
+
             if (department != null)
             {
+                var facultyId = department.Facultyid;
+
                 _context.Departments.Remove(department);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Details", "Faculties", new { id = facultyId });
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Faculties");
         }
 
         private bool DepartmentExists(int id)

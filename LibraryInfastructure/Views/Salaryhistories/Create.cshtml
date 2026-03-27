@@ -4,7 +4,7 @@
     ViewData["Title"] = "Створення";
 }
 
-<h1>Створення</h1>
+<h1>Додавання запису</h1>
 
 <h4>Історія виплат</h4>
 <hr />
@@ -12,21 +12,30 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Scientistid" />
-
             <div class="form-group">
-                <label class="control-label">Науковець</label>
-                <input class="form-control" value="@ViewBag.ScientistName" readonly />
+                <label asp-for="Scientistid" class="control-label"></label>
+                <select asp-for="Scientistid" class ="form-control" asp-items="ViewBag.Scientistid"></select>
             </div>
             <div class="form-group">
-                <label asp-for="Oldsalary" class="control-label"></label>
-                <input asp-for="Oldsalary" class="form-control" />
-                <span asp-validation-for="Oldsalary" class="text-danger"></span>
+                <label asp-for="Amount" class="control-label"></label>
+                <input asp-for="Amount" class="form-control" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Newsalary" class="control-label"></label>
-                <input asp-for="Newsalary" class="form-control" />
-                <span asp-validation-for="Newsalary" class="text-danger"></span>
+                <label asp-for="PaymentType" class="control-label"></label>
+                <select asp-for="PaymentType" class="form-control">
+                    <option value="">-- Оберіть тип --</option>
+                    <option value="Основа">Основна ставка</option>
+                    <option value="Аванс">Аванс</option>
+                    <option value="Премія">Премія</option>
+                    <option value="Лікарняні">Лікарняні</option>
+                </select>
+                <span asp-validation-for="PaymentType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PaymentDate" class="control-label"></label>
+                <input asp-for="PaymentDate" class="form-control" />
+                <span asp-validation-for="PaymentDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Reason" class="control-label"></label>
@@ -41,9 +50,28 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Назад</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.getElementById('Scientistid').addEventListener('change', function () {
+            var scientistId = this.value;
+            var amountInput = document.getElementById('Amount');
+
+            if (scientistId) {
+                fetch('/Salaryhistory/GetScientistSalary/' + scientistId)
+                    .then(response => response.json())
+                    .then(data => {
+                        amountInput.value = data.salary;
+                    });
+            } else {
+                amountInput.value = '';
+            }
+        });
+    </script>
 }
